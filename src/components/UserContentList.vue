@@ -1,34 +1,34 @@
 <template>
-    <div>
-        <div class="content-list">
-            <!-- 显示内容列表 -->
-            <div
-                v-for="content in contents"
-                :key="content.id"
-                class="content-item"
-            >
-                <h3 @click="goToContent(content.id)">{{ content.title }}</h3>
-                <p>{{ content.description }}</p>
-            </div>
-
-            <!-- 分页控件 -->
-            <van-pagination
-                v-model:current-page="currentPage"
-                :total-items="totalItems"
-                :items-per-page="itemsPerPage"
-                @change="fetchContents"
-            />
+    <div class="user-content-list">
+        <!-- 显示内容列表 -->
+        <div v-for="content in contents" :key="content.id" class="content-item">
+            <h3 @click="goToContent(content.id)">{{ content.title }}</h3>
+            <p>{{ content.description }}</p>
         </div>
+
+        <!-- 分页控件 -->
+        <van-pagination
+            v-model:current-page="currentPage"
+            :total-items="totalItems"
+            :items-per-page="itemsPerPage"
+            @change="fetchContents"
+        />
     </div>
 </template>
-<script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import apiService from '../services/apiService'; 
-import { contentApiEndpoint } from '../services/api'; 
-import { useUserStore } from '../stores/userStore';
 
-const userStore = useUserStore();
+<script setup>
+import { ref, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import apiService from '../services/apiService'; // 假设已经封装的 apiService
+import { userApiEndpoint } from '../services/api'; // 假设已经定义了端点
+
+// 接收 id 作为组件的 props 参数
+const props = defineProps({
+    id: {
+        type: Number,
+        required: true,
+    },
+});
 
 const contents = ref([]); // 内容列表
 const totalItems = ref(0); // 总内容数
@@ -41,9 +41,9 @@ const router = useRouter();
 const fetchContents = async () => {
     try {
         const response = await apiService(
-            contentApiEndpoint.getContents,
+            userApiEndpoint.getUserContents,
             null,
-            null,
+            { userId: props.id },
             {
                 page: currentPage.value,
                 pageSize: itemsPerPage.value,
@@ -60,6 +60,9 @@ const fetchContents = async () => {
 onMounted(() => {
     fetchContents();
 });
+
+// 监听 id 参数变化，当 id 变化时重新获取内容
+watch(() => props.id, fetchContents);
 
 // 点击内容跳转到详情页
 const goToContent = (id) => {

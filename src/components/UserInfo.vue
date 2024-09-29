@@ -14,7 +14,8 @@
                 <span>邮箱: {{ email }}</span>
             </div>
             <div>
-                <span>角色: {{ role }}</span>
+                <span>角色: {{ role }}</span
+                ><br />
                 <span v-if="role === 'creator'">
                     <span>订阅价格: </span>
                     <input v-if="isPriceEditing" v-model="subscriptionPrice" />
@@ -58,7 +59,7 @@ export default {
         },
         async togglePriceEdit() {
             if (this.isPriceEditing) {
-                await apiService(userApiEndpoint.updatePrice, {
+                await apiService(userApiEndpoint.updateInfo, {
                     price: this.subscriptionPrice,
                 });
             }

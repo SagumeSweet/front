@@ -1,6 +1,5 @@
 <template>
     <div class="user-info-view">
-        <h1>用户选项卡</h1>
         <ProfileTabs />
     </div>
 </template>

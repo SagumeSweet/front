@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="avatar-img" :style="{ width: size, height: size }">
-            <img :src="src" alt="" />
+            <img :src="src" :alt="src" />
         </div>
     </div>
 </template>
@@ -20,8 +20,14 @@ const props = defineProps({
 });
 </script>
 
+<script>
+export default {
+    name: 'AvatarFormat',
+};
+</script>
+
 <style lang="less" scoped>
-.head-img {
+.avatar-img {
     border-radius: 50%;
     border: 4px solid #ffffff;
     box-shadow: 3px 3px 3px #919191;

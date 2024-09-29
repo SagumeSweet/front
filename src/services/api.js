@@ -1,4 +1,4 @@
-export const baseUrl = 'http://127.0.0.1:3001/api';
+export const baseUrl = 'http://127.0.0.1:3000/api';
 
 export const userApiEndpoint = {
     register: { path: '/user/register', method: 'post', public: true },
@@ -6,13 +6,14 @@ export const userApiEndpoint = {
     getInfo: { path: '/user/me', method: 'get' },
     updateInfo: { path: '/user/me', method: 'put' },
     updateRole: { path: '/user/me/role', method: 'put' },
+    getUserByIdFromPublic: { path: '/user/user/:id', method: 'get', public: true }, // 不用认证
     getUserContents: {
-        path: '/user/:userId/contents',
+        path: '/user/user/:userId/contents',
         method: 'get',
         public: true,
     }, // 不用认证
     getUserSubscriberContents: {
-        path: '/user/:userId/subscriber-contents',
+        path: '/user/user/:userId/subscriber-contents',
         method: 'get',
         public: true,
     }, // 不用认证
@@ -20,13 +21,17 @@ export const userApiEndpoint = {
     setUserFavorites: { path: '/user/favorites', method: 'post' },
     deleteUserFavorites: { path: '/user/favorites', method: 'delete' },
     setUserFollows: { path: '/user/follow', method: 'post' },
-    deleteUserFollows: { path: '/user/follows', method: 'delete' },
-    getUserFollows: { path: '/user/follows', method: 'get' },
-    getPaymentAccount: { path: '/user/payment-account', method: 'get' },
-    setPaymentAccount: { path: '/user/payment-account', method: 'post' },
+    deleteUserFollows: { path: '/user/follow', method: 'delete' },
+    getUserFollows: { path: '/user/follow', method: 'get' },
+    getPaymentAccount: { path: '/user/payment-accounts', method: 'get' },
+    setPaymentAccount: { path: '/user/payment-accounts', method: 'post' },
     deletePaymentAccount: {
-        path: '/user/payment-account/:id',
+        path: '/user/payment-accounts/:id',
         method: 'delete',
+    },
+    updateDefaultPaymentAccount: {
+        path: '/user/payment-accounts/:id',
+        method: 'put',
     },
     getOrders: { path: '/user/payment-orders', method: 'get' },
     getSubscribe: { path: '/user/subscriptions', method: 'get' },
@@ -67,15 +72,17 @@ export const getFileApiEndpoint = {
     getContentMedia: {
         path: '/uploaded/content/:contentId',
         method: 'get',
+        isUrl: true,
     },
     getContentMediaPublic: {
         path: '/uploaded/content/public/:contentId',
         method: 'get',
         public: true,
+        isUrl: true,
     }, // 不用认证
 };
 
 export const updateFileApiEndpoint = {
-    uploadAvatar: { path: '/upload/avatar', method: 'post' },
-    uploadContentMedia: { path: '/upload/content', method: 'post' },
+    uploadAvatar: { path: '/upload/avatar', method: 'upload' },
+    uploadContentMedia: { path: '/upload/content', method: 'upload' },
 };

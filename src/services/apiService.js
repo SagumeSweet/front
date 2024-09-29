@@ -4,13 +4,8 @@ import { useUserStore } from '@/stores/userStore'; // 导入用户存储
 import qs from 'qs';
 import { showToast, showDialog } from 'vant'; // 导入 Vant 的提示组件
 
-const apiService = async (
-    endpoint,
-    data = null,
-    params = null,
-    queryParams = null
-) => {
-    const { path, method, public: isPublic } = endpoint;
+export const getFullApiUrl = (endpoint, params = null, queryParams = null) => {
+    const { path } = endpoint;
 
     // 替换路径中的动态参数
     let url = `${baseUrl}${path.replace(/:(\w+)/g, (_, key) =>
@@ -22,7 +17,19 @@ const apiService = async (
         const queryString = qs.stringify(queryParams);
         url += `?${queryString}`;
     }
+    return url;
+};
 
+const apiService = async (
+    endpoint,
+    data = null,
+    params = null,
+    queryParams = null
+) => {
+    const { path, method, public: isPublic, isUrl } = endpoint;
+
+    // 替换路径中的动态参数
+    let url = getFullApiUrl(endpoint, params, queryParams);
     const config = {
         method,
         url,
@@ -30,11 +37,12 @@ const apiService = async (
     };
 
     // 处理上传文件的情况
-    if (data && data.file) {
+    if (method === 'upload') {
         const formData = new FormData();
         Object.keys(data).forEach((key) => {
             formData.append(key, data[key]);
         });
+        config.method = 'post';
         config.data = formData;
         config.headers['Content-Type'] = 'multipart/form-data'; // 设置 Content-Type
     } else {
@@ -49,7 +57,7 @@ const apiService = async (
 
     try {
         const response = await axios(config);
-        if (response.status === 200 || response.status === 201) {
+        if (response.status === 200 || (response.status === 201)) {
             return response.data; // 返回数据
         } else {
             showToast('请求失败');

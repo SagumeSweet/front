@@ -31,7 +31,6 @@ export default defineConfig({
     }),
     Components({
       resolvers: [
-        // vant的默认样式，可进行修改
         VantResolver({
           importStyle: false,
         }),

@@ -1,6 +1,6 @@
 <template>
     <van-nav-bar
-        :title="title"
+        :title="currentTitle"
         left-text="返回"
         :right-text="isLoggedIn ? '退出' : '登录'"
         left-arrow
@@ -12,39 +12,45 @@
 <script>
 import { NavBar } from 'vant';
 import { useUserStore } from '@/stores/userStore';
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 export default {
     components: {
         'van-nav-bar': NavBar,
     },
-    props: {
-        title: {
-            type: String,
-            default: '标题', // 默认标题
-        },
-    },
-    data() {
-        return {
-            userStore: useUserStore(),
+    setup() {
+        const userStore = useUserStore();
+        const route = useRoute();
+        const router = useRouter();
+
+        // 动态获取当前路由的 meta 中的 title
+        const currentTitle = computed(() => route.meta.title || '默认标题');
+
+        // 计算登录状态
+        const isLoggedIn = computed(() => !!userStore.token);
+
+        // 左侧返回按钮的点击事件
+        const onClickLeft = () => {
+            router.go(-1); // 返回上一个路由
         };
-    },
-    computed: {
-        isLoggedIn() {
-            return !!this.userStore.token; // 根据 token 判断是否登录
-        },
-    },
-    methods: {
-        onClickLeft() {
-            this.$router.go(-1); // 返回上一个路由
-        },
-        async onClickRight() {
-            if (this.isLoggedIn) {
-                await this.userStore.setLogout(); // 调用登出方法
-                this.$router.push('/user/login'); // 跳转到登录页
+
+        // 右侧登录/登出按钮的点击事件
+        const onClickRight = async () => {
+            if (isLoggedIn.value) {
+                await userStore.setLogout(); // 调用登出方法
+                router.push('/user/login'); // 跳转到登录页
             } else {
-                this.$router.push('/user/login'); // 跳转到登录页
+                router.push('/user/login'); // 跳转到登录页
             }
-        },
+        };
+
+        return {
+            currentTitle,
+            isLoggedIn,
+            onClickLeft,
+            onClickRight,
+        };
     },
 };
 </script>

@@ -1,0 +1,101 @@
+<template>
+    <div class="content-shower">
+        <div v-if="contents.length > 0">
+            <!-- 循环展示内容 -->
+            <div
+                v-for="content in contents"
+                :key="content.id"
+                class="content-item"
+            >
+                <h3>{{ content.title }}</h3>
+                <p>{{ content.body }}</p>
+
+                <!-- 判断文件类型并展示 -->
+                <img
+                    v-if="isImage(content.filePath)"
+                    :src="content.filePath"
+                    alt="Content Image"
+                    class="content-image"
+                />
+                <video
+                    v-else-if="isVideo(content.filePath)"
+                    controls
+                    class="content-video"
+                >
+                    <source :src="content.filePath" type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+
+                <!-- 文件路径展示 -->
+                <p
+                    v-if="!isImage(content.filePath) && !isVideo(content.filePath)"
+                >
+                    文件路径:
+                    <a :href="content.filePath">{{ content.filePath }}</a>
+                </p>
+            </div>
+        </div>
+
+        <div v-else>
+            <p>暂无内容</p>
+        </div>
+    </div>
+</template>
+
+<script setup>
+    import { ref, onMounted } from 'vue';
+    import apiService from '../services/apiService';
+    import { contentApiEndpoint } from '../services/api';
+
+    // 模拟从 API 获取内容列表
+    const contents = ref([]);
+
+    // 获取内容列表的方法
+    const fetchContents = async () => {
+        try {
+            const response = await apiService(contentApiEndpoint.getContents);
+            contents.value = response.data.contents;
+        } catch (error) {
+            console.error('获取内容失败:', error);
+        }
+    };
+
+    // 判断是否是图片
+    const isImage = (filePath) => {
+        return /\.(jpeg|jpg|png|gif)$/.test(filePath);
+    };
+
+    // 判断是否是视频
+    const isVideo = (filePath) => {
+        return /\.(mp4|mov|avi)$/.test(filePath);
+    };
+
+    // 页面加载时获取内容
+    onMounted(() => {
+        fetchContents();
+    });
+</script>
+
+<style scoped>
+    .content-container {
+        padding: 20px;
+    }
+
+    .content-item {
+        margin-bottom: 20px;
+    }
+
+    .content-image {
+        width: 100%;
+        max-width: 600px;
+        display: block;
+        margin: 10px 0;
+    }
+
+    .content-video {
+        width: 100%;
+        max-width: 600px;
+        display: block;
+        margin: 10px 0;
+    }
+</style>

@@ -65,9 +65,7 @@ const enterData = ref({
 });
 
 const onSubmit = async (value) => {
-    console.log(value);
     const resResult = await apiService(userApiEndpoint.login, value);
-    console.log(resResult);
     userStore.setLogin(resResult.data.token, resResult.data.user);
     router.replace('/home');
 };
